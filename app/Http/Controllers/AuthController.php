@@ -63,18 +63,23 @@ class AuthController extends Controller
 
             $authToken = Str::random(20);
 
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'auth_token' => $authToken,
-            ]);
+
+            // return response()->json(["nex" => $authToken], 200);
+
+            $user = new User();
+
+            $user->name = $request->name;
+            $user->password = Hash::make($request->password);
+            $user->email = $request->email;
+            $user->auth_token = $authToken;
+
+            $user->save();
 
             // Envoi du mail de notification à l'admin
             Mail::send('emails.adminNotification', [
                 'name' => $user->name,
                 'email' => $user->email,
-                'authToken' => $authToken,
+                'auth_token' => $authToken,
             ], function ($message) {
                 $message->to('scoress.agbalo@epitech.eu');
                 $message->subject('Nouvelle inscription d’utilisateur');
